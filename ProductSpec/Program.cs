@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 public class Product
 {
@@ -21,17 +22,46 @@ public class Product
     }
 }
 
+
+
 class Program
 {
+    public static void ReadProductFromFile(string filename, Product product)
+    {        
+        string[] lines = File.ReadAllLines(filename);        
+        foreach (var line in lines)
+        {            
+            string[] fields = line.Split(';');
+            if (fields.Length == 4)
+            {                
+                string[] tagArray = fields[0].Split(',');
+                product.Codes = new List<string>(tagArray.Select(t => t.Trim()));
+                product.Name = fields[1].Trim();
+                product.Cost = float.Parse(fields[2].Trim(), CultureInfo.InvariantCulture);
+                product.Description = fields[3].Trim();
+            }
+        }
+    }
+
+
+
+    /////////////////////////////
     static void Main()
     {
-        Product product = new Product();
+        string workFolder = "Prices/";
+        string priceList = "stock.csv";
+        string priceFile = workFolder + priceList;
 
+        Product product = new Product();
+        ReadProductFromFile(priceFile, product);
+
+
+        /*
         product.Codes = new List<string> { "ABC", "XY", "CDF", "CDF", "XYZ" };
         product.Name = "Exceptional Double CDFer";
         product.Cost = 249.95f;
         product.Description = "Hotplug your XYZ whenever you want!";
-
+        */
 
         //List<string> based = new List<string> { "ABC", "XY", "CDF", "CDF", "XYZ" };
         List<string> based = product.Codes.ToList();
