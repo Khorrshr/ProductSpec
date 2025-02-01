@@ -6,7 +6,8 @@ using System.Reflection.Emit;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 
-
+//old stuff from back when it was a Console App initially
+//not Windows Form app like rn
 
 
 

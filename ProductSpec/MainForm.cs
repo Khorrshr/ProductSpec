@@ -15,43 +15,34 @@ namespace ProductSpec
 {
     public partial class MainForm : Form
     {
-
-
         private List<Product> products;
         Product chosenProduct = new Product();
 
-        private List<string> based = new List<string> { };
-        //List<string> based = product.Codes.ToList();
-        private List<string> plus = new List<string> { "ABC", "CDF", "CDF", "CDF", "BY" };
-        private List<string> extra = new List<string> { };
+        private List<string> based = new List<string> { }; //basic models to choose from
+        private List<string> plus = new List<string> { "ABC", "CDF", "CDF", "CDF", "BY" }; //change plus-codes here
+        private List<string> extra = new List<string> { }; //features lacking in basic model
 
         
 
         public MainForm()
         {
             InitializeComponent();
-
             AllocConsole();
 
             btn_confirm.Click += btn_confirm_Click;
+            buttonHelp.Click += buttonHelp_Click;
 
-            
-
-            
-
+            textBoxPlus.Text = "You chose Plus features: \"ABC\", \"CDF\", \"CDF\", \"CDF\", \"BY\" and you can't change them, haha. Buy premium!";
 
             string workFolder = "Prices/";
             string prices = "stock.csv";            
             string fullPath = workFolder + prices;
             
-
             products = ReadProductsFromFile(fullPath);
-            chosenProduct = products[0].Clone();
+            chosenProduct = products[0].Clone(); //initial default product
+            writeDescription(chosenProduct);
             based = chosenProduct.Codes;
 
-
-
-            //////
             productDropdown.Items.Clear();
 
             foreach (Product product in products)
@@ -67,38 +58,37 @@ namespace ProductSpec
             }
 
             productDropdown.SelectedIndexChanged += ProductDropdown_SelectedIndexChanged;
-            /////////
-
-
-            ////////////
+            
             Console.WriteLine($"\n\nSelected Product: {chosenProduct.Name}, Cost: {chosenProduct.Cost}");
             OutputLists();
-            //listAllProducts();
 
-
-
-            
+            //listAllProducts();  //not needed anymore
 
         }
 
         [System.Runtime.InteropServices.DllImport("kernel32.dll")]
+
         public static extern bool AllocConsole();
 
+        
         private void label1_Click(object sender, EventArgs e)
         {
             
         }
 
         private void btn_confirm_Click(object sender, EventArgs e)
-        {
-            //MessageBox.Show("Button was pressed!");            
+        {               
             WriteResultToFile("output.txt", arrangeExtras(extra));
         }
 
-        private void OutputLists()
-        {
+        private void buttonHelp_Click(object sender, EventArgs e)
+        {   
+            System.Diagnostics.Process.Start("notepad.exe", "readme.txt");
+        }
         
 
+        private void OutputLists()
+        {
             Console.Write("Base list: ");            
             foreach (string item in based) {Console.Write(item + " "); }
 
@@ -122,7 +112,7 @@ namespace ProductSpec
             Console.Write(arrangeExtras(extra));
         }
 
-        private void listAllProducts()
+        private void listAllProducts() //not used anymore
         {
             Console.WriteLine("\n\nProducts list: ");
 
@@ -149,42 +139,44 @@ namespace ProductSpec
             }
         }
 
-        public static string arrangeExtras(List<string> code)
+        public static string arrangeExtras(List<string> code) //extras are the codes not in the base model but which are in plus
         {
-            var result = code
-                .GroupBy(code => code)                   // Group by the item itself
-                .Select(group => $"{group.Key}*{group.Count()}")  // Format each group as "Item*Count"
-                .OrderBy(code => code)                    // Optional: Order the output alphabetically
-                .ToList();
+            if (code == null || code.Count == 0) //if the list is null or empty
+            {
+                return "All the PLUS codes found in BASE!";
+            }
 
-            // Join all entries into a single string with line breaks
-            return string.Join(Environment.NewLine, result);
+            else
+            {
+                var result = code
+                    .GroupBy(code => code)
+                    .Select(group => $"{group.Key}*{group.Count()}")
+                    .OrderBy(code => code)
+                    .ToList();
+
+                return string.Join(Environment.NewLine, result);
+            }
         }
 
-        //
-        //
-        //
         
-
-
         private void ProductDropdown_SelectedIndexChanged(object sender, EventArgs e)
         {
             
-            // Ensure a valid selection
+            // valid selection?
             if (productDropdown.SelectedIndex >= 0)
             {
                 string selectedProductName = productDropdown.SelectedItem.ToString();
                 extra.Clear();
 
-                // Find the selected product in the list
                 Product selectedProduct = products.FirstOrDefault(p => p.Name == selectedProductName);
 
                 if (selectedProduct != null)
                 {
-                    // Update label or any other UI elements based on selection
+                    // Update label and description
                     label1.Text = $"Price: {selectedProduct.Cost.ToString("0.00")}";
+                    writeDescription(selectedProduct);
 
-                    //do stuff
+                    //do actual stuff
                     chosenProduct = selectedProduct.Clone();
                     Console.WriteLine($"\n\nSelected Product: {chosenProduct.Name}, Cost: {chosenProduct.Cost}");
                     based = chosenProduct.Codes;
@@ -193,17 +185,19 @@ namespace ProductSpec
             }
         }
 
+        private void writeDescription(Product selectedProduct)
+        {
+            string features = "";
+            textBox.Text = selectedProduct.Description;
+            foreach (string item in selectedProduct.Codes)
+            {
+                features += item + " ";
+            }
+            textBox.AppendText(Environment.NewLine + "Features: " + features);            
+        }
 
-
-        ///////////////////////
-        
-        /////////////////
-        /// 
-        /// 
-        /// 
-       
-        //////////////
         /*
+        //initial stuff back from times when there was only one product in file
         public static void ReadProductFromFile(string filename, Product product) //obsolete
         {        
             string[] lines = File.ReadAllLines(filename);        
@@ -221,10 +215,7 @@ namespace ProductSpec
             }
         }
         */
-        ////////////////////////////
-
-
-
+        
 
         public static List<Product> ReadProductsFromFile(string filename)
         {
@@ -236,29 +227,27 @@ namespace ProductSpec
             {
                 string[] fields = line.Split(';');
 
-                if (fields.Length == 5) // Now expecting 5 fields including ID
+                if (fields.Length == 5) // Now expecting 5 fields including ID (which I don't use in the end)
                 {
                     Product product = new Product();
 
-                    // Parse ID from the first field
                     product.ID = fields[0].Trim();
 
                     string[] tagArray = fields[1].Split(',');
                     product.Codes = new List<string>(tagArray.Select(t => t.Trim()));
 
                     product.Name = fields[2].Trim();
-                    product.Cost = float.Parse(fields[3].Trim(), CultureInfo.InvariantCulture);
+                    product.Cost = float.Parse(fields[3].Trim(), CultureInfo.InvariantCulture); //otherwise it hiccups on floats
                     product.Description = fields[4].Trim();
 
 
-                    // Parse cost safely
                     if (float.TryParse(fields[3].Trim(), NumberStyles.Float, CultureInfo.InvariantCulture, out float cost))
                     {
                         product.Cost = cost;
                     }
                     else
                     {
-                        // Handle error, e.g., log it or set a default value
+                        // Handle error
                         Console.WriteLine($"Failed to parse cost for product {product.ID}: {fields[3].Trim()}. Setting cost to 0.");
                         product.Cost = 0f; // Default value for invalid costs
                     }
@@ -267,23 +256,17 @@ namespace ProductSpec
                 }
                 else
                 {
-                    Console.WriteLine($"Skipping malformed line: {line}");
+                    Console.WriteLine($"Skipping malformed line: {line}"); //pheeew
                 }
             }
 
             return products;
         }
 
-
-
     }
 
     
-    //////////////
     
-
-
-    //////////////
     public class Product
     {
         public string ID { get; set; }
