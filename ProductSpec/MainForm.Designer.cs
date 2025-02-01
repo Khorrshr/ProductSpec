@@ -29,28 +29,18 @@
         private void InitializeComponent()
         {
             label1 = new Label();
-            btn_button1 = new Button();
             productDropdown = new ComboBox();
             SuspendLayout();
             // 
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(550, 138);
+            label1.Location = new Point(665, 64);
             label1.Name = "label1";
             label1.Size = new Size(42, 25);
             label1.TabIndex = 0;
             label1.Text = "Test";
             label1.Click += label1_Click;
-            // 
-            // btn_button1
-            // 
-            btn_button1.Location = new Point(409, 353);
-            btn_button1.Name = "btn_button1";
-            btn_button1.Size = new Size(244, 34);
-            btn_button1.TabIndex = 1;
-            btn_button1.Text = "Do something";
-            btn_button1.UseVisualStyleBackColor = true;
             // 
             // productDropdown
             // 
@@ -66,7 +56,6 @@
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
             Controls.Add(productDropdown);
-            Controls.Add(btn_button1);
             Controls.Add(label1);
             Name = "MainForm";
             Text = "MainForm";
@@ -77,7 +66,6 @@
         #endregion
 
         private Label label1;
-        private Button btn_button1;
         private ComboBox productDropdown;
     }
 }

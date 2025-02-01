@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.InteropServices.Marshalling;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -17,6 +18,13 @@ namespace ProductSpec
 
 
         private List<Product> products;
+        Product chosenProduct = new Product();
+
+        private List<string> based = new List<string> { };
+        //List<string> based = product.Codes.ToList();
+        private List<string> plus = new List<string> { "ABC", "CDF", "CDF", "CDF", "BY" };
+        private List<string> extra = new List<string> { };
+
         public MainForm()
         {
             InitializeComponent();
@@ -30,6 +38,9 @@ namespace ProductSpec
             string fullPath = workFolder + priceList;
 
             products = ReadProductsFromFile(fullPath);
+            chosenProduct = products[0].Clone();
+            based = chosenProduct.Codes;
+
 
 
             //////
@@ -44,28 +55,55 @@ namespace ProductSpec
             if (productDropdown.Items.Count > 0)
             {
                 productDropdown.SelectedIndex = 0;
+                label1.Text = "Price: " + products[0].Cost.ToString();
             }
+
+            productDropdown.SelectedIndexChanged += ProductDropdown_SelectedIndexChanged;
             /////////
 
 
-            ///////
-            List<string> based = new List<string> { "ABC", "XY", "CDF", "CDF", "XYZ" };
-            //List<string> based = product.Codes.ToList();
-            List<string> plus = new List<string> { "ABC", "CDF", "CDF", "CDF", "BY" };
-            List<string> extra = new List<string> { };
-            //////////
-            
-            if (products != null && products.Any())
-            {
-                foreach (Product product in products)
-                {
-                    Console.WriteLine(product.Name);
-                }
-                label1.Text = products[2].Cost.ToString();
-            }
+            ////////////
+            Console.WriteLine($"\n\nSelected Product: {chosenProduct.Name}, Cost: {chosenProduct.Cost}");
+            OutputLists();
+            //listAllProducts();
 
-            Console.WriteLine("\n\nNew version: ");
+
+
             
+
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void OutputLists()
+        {
+            Console.Write("Base list: ");
+            foreach (string item in based) { Console.Write(item + " "); }
+
+            Console.Write("\nPlus list: ");
+            foreach (string item in plus) { Console.Write(item + " "); }
+
+            
+            foreach (string plusCode in plus)
+            {
+                if (!based.Remove(plusCode)) //whole algorithm boils down to this
+                    extra.Add(plusCode);
+            }
+            Console.Write("\nList of PLUS codes not in BASE: ");
+
+            foreach (var extraCode in extra)
+            {
+                Console.Write(extraCode + " ");
+            }
+        }
+
+        private void listAllProducts()
+        {
+            Console.WriteLine("\n\nProducts list: ");
+
 
             foreach (var singleProduct in products)
             {
@@ -79,17 +117,43 @@ namespace ProductSpec
                 Console.WriteLine("\nDescription: " + singleProduct.Description);
                 Console.WriteLine();
             }
-
         }
 
-        private void label1_Click(object sender, EventArgs e)
+        private void ProductDropdown_SelectedIndexChanged(object sender, EventArgs e)
         {
             
+            // Ensure a valid selection
+            if (productDropdown.SelectedIndex >= 0)
+            {
+                string selectedProductName = productDropdown.SelectedItem.ToString();
+                extra.Clear();
+
+                // Find the selected product in the list
+                Product selectedProduct = products.FirstOrDefault(p => p.Name == selectedProductName);
+
+                if (selectedProduct != null)
+                {
+                    // Update label or any other UI elements based on selection
+                    label1.Text = $"Price: {selectedProduct.Cost.ToString("0.00")}";
+
+                    //do stuff
+                    chosenProduct = selectedProduct.Clone();
+                    Console.WriteLine($"\n\nSelected Product: {chosenProduct.Name}, Cost: {chosenProduct.Cost}");
+                    based = chosenProduct.Codes;
+                    OutputLists();
+                }
+            }
         }
 
 
 
         ///////////////////////
+        
+        /////////////////
+        /// 
+        /// 
+        /// 
+       
         //////////////
         /*
         public static void ReadProductFromFile(string filename, Product product) //obsolete
@@ -166,6 +230,11 @@ namespace ProductSpec
 
     }
 
+    
+    //////////////
+    
+
+
     //////////////
     public class Product
     {
@@ -187,5 +256,22 @@ namespace ProductSpec
             Cost = cost;
             Description = description;
         }
+
+
+        public Product Clone()
+        {
+            return new Product
+            {
+                ID = this.ID,
+                Codes = new List<string>(this.Codes), // New list for independence
+                Name = this.Name,
+                Cost = this.Cost,
+                Description = this.Description
+            };
+        }
+
+
     }
+
+
 }
