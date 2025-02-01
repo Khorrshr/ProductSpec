@@ -25,14 +25,19 @@ namespace ProductSpec
         private List<string> plus = new List<string> { "ABC", "CDF", "CDF", "CDF", "BY" };
         private List<string> extra = new List<string> { };
 
+        
 
         public MainForm()
         {
             InitializeComponent();
 
+            AllocConsole();
+
             btn_confirm.Click += btn_confirm_Click;
 
+            
 
+            
 
 
             string workFolder = "Prices/";
@@ -76,6 +81,9 @@ namespace ProductSpec
 
         }
 
+        [System.Runtime.InteropServices.DllImport("kernel32.dll")]
+        public static extern bool AllocConsole();
+
         private void label1_Click(object sender, EventArgs e)
         {
             
@@ -89,8 +97,10 @@ namespace ProductSpec
 
         private void OutputLists()
         {
-            Console.Write("Base list: ");
-            foreach (string item in based) { Console.Write(item + " "); }
+        
+
+            Console.Write("Base list: ");            
+            foreach (string item in based) {Console.Write(item + " "); }
 
             Console.Write("\nPlus list: ");
             foreach (string item in plus) { Console.Write(item + " "); }
@@ -150,6 +160,11 @@ namespace ProductSpec
             // Join all entries into a single string with line breaks
             return string.Join(Environment.NewLine, result);
         }
+
+        //
+        //
+        //
+        
 
 
         private void ProductDropdown_SelectedIndexChanged(object sender, EventArgs e)
