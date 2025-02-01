@@ -30,12 +30,13 @@
         {
             label1 = new Label();
             btn_button1 = new Button();
+            productDropdown = new ComboBox();
             SuspendLayout();
             // 
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(364, 113);
+            label1.Location = new Point(550, 138);
             label1.Name = "label1";
             label1.Size = new Size(42, 25);
             label1.TabIndex = 0;
@@ -44,18 +45,27 @@
             // 
             // btn_button1
             // 
-            btn_button1.Location = new Point(282, 301);
+            btn_button1.Location = new Point(409, 353);
             btn_button1.Name = "btn_button1";
             btn_button1.Size = new Size(244, 34);
             btn_button1.TabIndex = 1;
             btn_button1.Text = "Do something";
             btn_button1.UseVisualStyleBackColor = true;
             // 
+            // productDropdown
+            // 
+            productDropdown.FormattingEnabled = true;
+            productDropdown.Location = new Point(154, 61);
+            productDropdown.Name = "productDropdown";
+            productDropdown.Size = new Size(378, 33);
+            productDropdown.TabIndex = 2;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(productDropdown);
             Controls.Add(btn_button1);
             Controls.Add(label1);
             Name = "MainForm";
@@ -68,5 +78,6 @@
 
         private Label label1;
         private Button btn_button1;
+        private ComboBox productDropdown;
     }
 }
