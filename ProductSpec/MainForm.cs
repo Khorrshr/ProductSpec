@@ -25,17 +25,20 @@ namespace ProductSpec
         private List<string> plus = new List<string> { "ABC", "CDF", "CDF", "CDF", "BY" };
         private List<string> extra = new List<string> { };
 
+
         public MainForm()
         {
             InitializeComponent();
 
+            btn_confirm.Click += btn_confirm_Click;
 
-            
+
 
 
             string workFolder = "Prices/";
-            string priceList = "stock.csv";
-            string fullPath = workFolder + priceList;
+            string prices = "stock.csv";            
+            string fullPath = workFolder + prices;
+            
 
             products = ReadProductsFromFile(fullPath);
             chosenProduct = products[0].Clone();
@@ -78,6 +81,12 @@ namespace ProductSpec
             
         }
 
+        private void btn_confirm_Click(object sender, EventArgs e)
+        {
+            //MessageBox.Show("Button was pressed!");            
+            WriteResultToFile("output.txt", arrangeExtras(extra));
+        }
+
         private void OutputLists()
         {
             Console.Write("Base list: ");
@@ -98,6 +107,9 @@ namespace ProductSpec
             {
                 Console.Write(extraCode + " ");
             }
+
+            Console.WriteLine("\nArranged Extra list: ");
+            Console.Write(arrangeExtras(extra));
         }
 
         private void listAllProducts()
@@ -118,6 +130,27 @@ namespace ProductSpec
                 Console.WriteLine();
             }
         }
+
+        public void WriteResultToFile(string filename, string output)
+        {
+            using (StreamWriter writer = new StreamWriter(filename))
+            {
+                writer.WriteLine(output);
+            }
+        }
+
+        public static string arrangeExtras(List<string> code)
+        {
+            var result = code
+                .GroupBy(code => code)                   // Group by the item itself
+                .Select(group => $"{group.Key}*{group.Count()}")  // Format each group as "Item*Count"
+                .OrderBy(code => code)                    // Optional: Order the output alphabetically
+                .ToList();
+
+            // Join all entries into a single string with line breaks
+            return string.Join(Environment.NewLine, result);
+        }
+
 
         private void ProductDropdown_SelectedIndexChanged(object sender, EventArgs e)
         {

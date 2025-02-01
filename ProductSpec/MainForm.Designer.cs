@@ -30,6 +30,7 @@
         {
             label1 = new Label();
             productDropdown = new ComboBox();
+            btn_confirm = new Button();
             SuspendLayout();
             // 
             // label1
@@ -50,11 +51,21 @@
             productDropdown.Size = new Size(378, 33);
             productDropdown.TabIndex = 2;
             // 
+            // btn_confirm
+            // 
+            btn_confirm.Location = new Point(331, 338);
+            btn_confirm.Name = "btn_confirm";
+            btn_confirm.Size = new Size(112, 34);
+            btn_confirm.TabIndex = 3;
+            btn_confirm.Text = "Confirm";
+            btn_confirm.UseVisualStyleBackColor = true;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(btn_confirm);
             Controls.Add(productDropdown);
             Controls.Add(label1);
             Name = "MainForm";
@@ -67,5 +78,6 @@
 
         private Label label1;
         private ComboBox productDropdown;
+        private Button btn_confirm;
     }
 }
